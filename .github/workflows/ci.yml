@@ -32,14 +32,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      - name: List files in the working directory
-      - run: ls -la
-
-      - name: Print environment variables
-      - run: env
-
       - name: Install dependencies
-        run: npm ci # Faster and more reliable for CI/CD environments
+        run: npm ci
 
       - name: Run tests
         run: npm test
