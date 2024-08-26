@@ -20,10 +20,10 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "20" # or the version you are using
+          node-version: "20"
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci # Faster and more reliable for CI/CD environments
 
       - name: Run tests
         run: npm test
