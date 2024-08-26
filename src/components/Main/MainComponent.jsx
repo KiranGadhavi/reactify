@@ -7,7 +7,7 @@ export default function MainComponent() {
       <section className="flex text-lg text-black relative top-16 left-0 w-full p-4 pb-16 justify-center">
         <article className=" ">
           <Image
-            src={"/assets/hero-Desktop.png"}
+            src={"/assets/hero-desktop.png"}
             alt="seen"
             width={500}
             height={500}
