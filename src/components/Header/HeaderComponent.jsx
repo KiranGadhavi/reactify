@@ -35,9 +35,9 @@ export default function HeaderComponent() {
             </article>
           )}
 
-          <article className="">
+          <article>
             {hamburgerHideShow && (
-              <div className="p-4 bg-gradient-to-r from-orange-300 to-orange-500 text-white hover:bg-orange-800 hover:text-white">
+              <div className="p-4 bg-gradient-to-r from-orange-300 to-orange-500 hover:bg-orange-500">
                 <div className="text-end">
                   {setCrossHideShow && (
                     <button
@@ -53,7 +53,7 @@ export default function HeaderComponent() {
                     </button>
                   )}
                 </div>
-                <div className="text-center ">
+                <div className="text-center">
                   <ul>
                     <li>
                       <Link href="/">Home</Link>

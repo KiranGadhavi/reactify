@@ -2,8 +2,10 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import HeaderComponent from "@/components/Header/HeaderComponent";
 import FooterComponent from "@/components/Footer/FooterComponent";
+import StateWrapperComponent from "@/components/StateWrapper/StateWrapperComponent";
 
 const inter = Inter({ subsets: ["latin"] });
+// export const MyContext = createContext(); // Make sure to export the context
 
 export const metadata = {
   title: "KReactify",
@@ -11,12 +13,16 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  // const [value, setValue] = useState("Initial value");
+
   return (
     <html lang="en">
       <body className={inter.className}>
         <div className="flex flex-col min-h-screen">
           <HeaderComponent />
-          {children}
+          {/* <MyContext.Provider value={{ value, setValue }}> */}
+          <StateWrapperComponent>{children}</StateWrapperComponent>
+          {/* </MyContext.Provider> */}
           <FooterComponent />
         </div>
       </body>

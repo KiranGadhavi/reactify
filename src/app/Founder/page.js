@@ -1,5 +1,6 @@
+import FounderComponent from "@/components/Founder/FounderComponent";
 import React from "react";
 
 export default function page() {
-  return <div>Founder page</div>;
+  return <FounderComponent className="pt-8 p-4" />;
 }
