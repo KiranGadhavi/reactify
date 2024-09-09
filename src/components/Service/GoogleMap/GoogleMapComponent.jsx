@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useRef, useMemo } from "react";
-import { GoogleMap, useLoadScript, MarkerF } from "@react-google-maps/api";
+import { GoogleMap, useLoadScript } from "@react-google-maps/api";
 
 const containerStyle = {
   width: "100%",
@@ -23,13 +23,27 @@ const GoogleMapComponent = () => {
   });
 
   const mapRef = useRef(null);
+  const markerRef = useRef(null);
 
   const onLoad = useCallback((map) => {
     mapRef.current = map;
+
+    // Create the new AdvancedMarkerElement to replace MarkerF
+    const marker = new window.google.maps.marker.AdvancedMarkerElement({
+      position: center,
+      map: map,
+    });
+
+    markerRef.current = marker;
   }, []);
 
   const onUnmount = useCallback(() => {
-    mapRef.current = null;
+    if (mapRef.current) {
+      mapRef.current = null;
+    }
+    if (markerRef.current) {
+      markerRef.current.setMap(null); // Clean up marker when unmounting
+    }
   }, []);
 
   const options = useMemo(
@@ -42,7 +56,7 @@ const GoogleMapComponent = () => {
   );
 
   if (loadError) return <div>Error loading maps</div>;
-  if (!isLoaded) return <div>Loading maps</div>;
+  if (!isLoaded) return <div>Loading maps...</div>;
 
   return (
     <GoogleMap
@@ -52,9 +66,7 @@ const GoogleMapComponent = () => {
       onLoad={onLoad}
       onUnmount={onUnmount}
       options={options}
-    >
-      <MarkerF position={center} />
-    </GoogleMap>
+    />
   );
 };
 
