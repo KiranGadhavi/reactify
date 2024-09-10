@@ -54,7 +54,7 @@ export default function HeaderComponent() {
                   )}
                 </div>
                 <div className="text-center">
-                  <ul>
+                  <ul onClick={handleButton}>
                     <li>
                       <Link href="/">Home</Link>
                     </li>

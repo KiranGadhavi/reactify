@@ -10,6 +10,7 @@ export default function HowItWorksComponent({ imgData }) {
             alt={imgData.alt}
             width={imgData.width.default}
             height={imgData.height.default}
+            loading="lazy"
             className="w-full h-auto object-contain my-4 sm:w-[250px] sm:h-[250px] md:w-[300px] md:h-[300px] lg:w-[350px] lg:h-[350px]"
           />
           <div className="my-2 px-6 text-height-200">

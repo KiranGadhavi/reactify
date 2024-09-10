@@ -76,6 +76,7 @@ export default function MainComponent() {
             alt="seen"
             width={400}
             height={100}
+            loading="lazy"
             // className="w-full h-auto"
           />
         </article>
