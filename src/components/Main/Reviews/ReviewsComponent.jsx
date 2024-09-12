@@ -21,7 +21,7 @@ export default function ReviewsComponent() {
           setLoading(true);
           setError(null);
           const response = await fetch(
-            `https://seal-app-336e8.ondigitalocean.app/reviews?country=${selectedCountry}`
+            `${process.env.NEXT_PUBLIC_REVIEWS_API_URL}?country=${selectedCountry}`
           );
           const data = await response.json();
           setReviews(data);
