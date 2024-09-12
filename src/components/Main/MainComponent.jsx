@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import HowItWorksComponent from "./HowItWorks/HowItWorksComponent";
 import Link from "next/link";
+import ReviewsComponent from "./Reviews/ReviewsComponent";
 
 const imgWithContent = [
   {
@@ -87,14 +88,14 @@ export default function MainComponent() {
               <p>
                 <strong>Perfect Place...</strong>
               </p>
-              <button className="bg-orange-300 border-black rounded-md p-2 max-w-fit bg-gradient-to-r from-orange-300 to-orange-600 text-white hover:bg-orange-800 hover:text-white">
+              <button className="rounded-md p-2 max-w-fit bg-gradient-to-r from-orange-300 to-orange-600 text-white ">
                 <Link href="/Booking">Book Consultation</Link>
               </button>
             </div>
           </div>
         </article>
       </section>
-
+      <ReviewsComponent />
       <section>
         <article>
           <h1 className="text-center font-bold text-xl py-4">How It Works</h1>

@@ -10,15 +10,15 @@ export default function FounderFlashComponent({
     <section>
       <article className="flex flex-col items-center justify-center">
         <div className="flex-row ">
-          <div className="py-4 xl:h-32  md:h-48">
-            <h1 className="font-bold py-2">{title}</h1>
+          <div className="py-4 xl:h-32 md:h-48">
+            <h1 className="font-bold py-2 text-xl">{title}</h1>
             <p> {description}</p>
           </div>
           <div className="flex-row xl:py-4 md:py-2">
             <Image
               src={imageSrc}
               alt={altText}
-              width={450}
+              width={460}
               height={400}
               loading="lazy"
             />

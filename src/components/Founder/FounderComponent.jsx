@@ -27,7 +27,7 @@ export default function FounderComponent() {
   return (
     <section className="grid grid-cols pt-14 p-4">
       <article className="flex flex-col md:flex-row bg-gradient-to-r from-orange-500 to-orange-200">
-        <div className="basis-6/12 font-bold">
+        <div className="basis-6/12 font-bold pb-6">
           <h1 className="text-4xl text-center py-16">
             <div>Meet the artisans</div>
             <div>behind our </div>
@@ -46,7 +46,7 @@ export default function FounderComponent() {
         </div>
       </article>
       <br />
-      <article className="grid grid-cols md:grid-cols-3 gap-10">
+      <article className="grid grid-cols md:grid-cols-3 gap-10 pb-4">
         {founderWorks.map((founderwork, index) => (
           <FounderFlashComponent key={index} {...founderwork} />
         ))}
