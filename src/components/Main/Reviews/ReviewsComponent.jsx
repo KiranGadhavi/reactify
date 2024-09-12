@@ -20,14 +20,20 @@ export default function ReviewsComponent() {
         try {
           setLoading(true);
           setError(null);
+
           const response = await fetch(
             `${process.env.NEXT_PUBLIC_REVIEWS_API_URL}?country=${selectedCountry}`
           );
+
+          if (!response.ok) {
+            throw new Error(`Error: ${response.statusText}`);
+          }
+
           const data = await response.json();
           setReviews(data);
-          setLoading(false);
         } catch (error) {
           setError(error.message);
+        } finally {
           setLoading(false);
         }
       };
@@ -51,19 +57,6 @@ export default function ReviewsComponent() {
           country to see the latest review:
         </p>
         <div className="flex flex-col sm:flex-row justify-center items-center">
-          {/* {buttonData.map((btnData) => (
-            <div
-              key={btnData.id}
-              className="text-center w-40 bg-gray-600 m-4 p-1 rounded-md text-white hover:bg-orange-300 hover:rounded-md hover:p-1 hover:w-40 hover:bg-gradient-to-r hover:from-orange-300 hover:to-orange-600"
-            >
-              <button
-                onClick={() => handleClick(btnData.label)}
-                className="m-2 w-full"
-              >
-                {btnData.label}
-              </button>
-            </div>
-          ))} */}
           {buttonData.map((btnData) => (
             <div
               key={btnData.id}
@@ -85,31 +78,36 @@ export default function ReviewsComponent() {
         </div>
         {loading && <p>Loading...</p>}
         {error && <p>Error: {error}</p>}
-        {/* {Array.isArray(reviews) && reviews.length > 0 && (
+
+        {/* Handle both array of reviews and a single review */}
+        {selectedCountry && Array.isArray(reviews) && reviews.length > 0 && (
           <div>
             <h2>Reviews for {selectedCountry}</h2>
-
             {reviews.map((review) => (
-              <div key={review.id}>
+              <div key={review.id} className="bg-gray-200 p-4 rounded my-2">
                 <h3>{review.text}</h3>
                 <p>{review.author}</p>
-                <p>{review.location}</p>
+                {review.location && <p>{review.location}</p>}
                 <p>{review.date}</p>
                 <p>{review.rating}</p>
-                <p>{review.review}</p>
               </div>
             ))}
           </div>
-        )} */}
-        {selectedCountry && reviews && reviews.text && (
-          <>
-            <div className="bg-gray-200 p-4 rounded">{reviews.text}</div>
-            <div className="text-right p-1 font-bold">
-              {reviews.author}
-              {reviews.location ? ` - ${reviews.location}` : ""}
-            </div>
-          </>
         )}
+
+        {/* In case it's a single review */}
+        {selectedCountry &&
+          reviews &&
+          !Array.isArray(reviews) &&
+          reviews.text && (
+            <>
+              <div className="bg-gray-200 p-4 rounded">{reviews.text}</div>
+              <div className="text-right p-1 font-bold">
+                {reviews.author}
+                {reviews.location ? ` - ${reviews.location}` : ""}
+              </div>
+            </>
+          )}
       </article>
     </section>
   );
