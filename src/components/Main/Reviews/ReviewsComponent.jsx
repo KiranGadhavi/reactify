@@ -53,7 +53,7 @@ export default function ReviewsComponent() {
         <h1 className="m-2 text-xl">Trusted</h1>
         <hr />
         <p className="m-6">
-          We've got thousands of happy customers all over the UK. Choose your
+          We have got thousands of happy customers all over the UK. Choose your
           country to see the latest review:
         </p>
         <div className="flex flex-col sm:flex-row justify-center items-center">
