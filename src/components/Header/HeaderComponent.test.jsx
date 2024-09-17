@@ -1,65 +1,47 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import HeaderComponent from "./HeaderComponent.jsx"; // Adjust the path if necessary
 
 describe("HeaderComponent", () => {
-  it("renders HeaderComponent with correct content", () => {
+  it("renders the header with correct initial content and toggles menu visibility", () => {
     render(<HeaderComponent />);
 
-    // Check for text content in the header
+    // Check for initial header content
     const headerText = screen.getByText("KReactify");
     expect(headerText).toBeInTheDocument();
 
-    // Ensure the emoji is also present
     const emoji = screen.getByText("🖊️");
     expect(emoji).toBeInTheDocument();
-  });
 
-  test("header contains the menu button image", () => {
-    render(<HeaderComponent />);
+    // Check for menu button
+    const menuButton = screen.getByAltText("menu-button");
+    expect(menuButton).toBeInTheDocument();
 
-    // Verify the menu button image is present
-    const menuButtonImage = screen.getByAltText("menu-button");
-    expect(menuButtonImage).toBeInTheDocument();
+    // Check initial structure (menu should be hidden initially)
+    expect(screen.queryByRole("list")).not.toBeInTheDocument();
 
-    // Check that the image source contains part of the expected path
-    const src = menuButtonImage.getAttribute("src");
-    // Ensure the URL contains the expected path segment
-    expect(src).toContain("menu-open-button.png");
-  });
+    // Simulate button click to show the menu
+    fireEvent.click(menuButton);
 
-  test("header has correct CSS classes and structure", () => {
-    render(<HeaderComponent />);
+    // Check if the menu is now visible
+    const menuList = screen.getByRole("list");
+    expect(menuList).toBeInTheDocument();
 
-    // Check if the header has the correct classes
-    const headerElement = screen.getByRole("banner");
-    expect(headerElement).toHaveClass("grid");
-    expect(headerElement).toHaveClass("p-4");
-    expect(headerElement).toHaveClass("fixed");
-    expect(headerElement).toHaveClass("top-0");
-    expect(headerElement).toHaveClass("left-0");
-    expect(headerElement).toHaveClass("w-full");
-    expect(headerElement).toHaveClass("z-10");
-    expect(headerElement).toHaveClass("bg-white");
-  });
+    // Check for close button after clicking the menu button
+    const closeButton = screen.getByAltText("close-menu-button");
+    expect(closeButton).toBeInTheDocument();
 
-  test("header contains a section with the correct structure", () => {
-    render(<HeaderComponent />);
+    // Check the content of the menu
+    expect(menuList).toHaveTextContent("Home");
+    expect(menuList).toHaveTextContent("Founder Page");
+    expect(menuList).toHaveTextContent("Booking Consultation");
+    expect(menuList).toHaveTextContent("Service");
 
-    // Check if the header contains a section with the expected structure
-    const sectionElement = screen.getByRole("banner").querySelector("section");
-    expect(sectionElement).toBeInTheDocument();
+    // Simulate clicking the close button
+    fireEvent.click(closeButton);
 
-    const articles = sectionElement.querySelectorAll("article");
-    expect(articles).toHaveLength(2);
-
-    // Check if the articles have expected content
-    expect(articles[0]).toHaveTextContent("KReactify");
-    expect(articles[0]).toHaveTextContent("🖊️");
-
-    const button = articles[1].querySelector("button");
-    expect(button).toBeInTheDocument();
-    expect(button).toHaveTextContent(""); // Ensure button is empty or contains specific content if needed
+    // Check that the menu is hidden again
+    expect(screen.queryByRole("list")).not.toBeInTheDocument();
   });
 });
