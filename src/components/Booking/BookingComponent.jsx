@@ -1,7 +1,6 @@
 "use client";
 import { useReducer } from "react";
 
-// create initialState (object with data and errorStatus keys)
 const initialState = {
   data: {
     fullName: "",
@@ -13,15 +12,8 @@ const initialState = {
   },
   errors: {},
   status: "Editing",
-  formDesign: {
-    inputClasses:
-      "w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500",
-    labelClasses: "block text-sm font-medium text-gray-700 mb-1",
-    errorClasses: "mt-1 text-sm text-red-600",
-  },
 };
 
-// Reducer function which has data and action, and different cases of action.type
 function reducer(state, action) {
   switch (action.type) {
     case "CHANGE_FORM_DATA":
@@ -45,13 +37,13 @@ function reducer(state, action) {
         },
       };
     case "Submit_Started":
-      return { ...state, Status: "Submitting" };
+      return { ...state, status: "Submitting" };
     case "Error":
-      return { ...state, Status: "Error" };
+      return { ...state, status: "Error" };
     case "Form_Success":
-      return { ...state, Status: "Success" };
+      return { ...state, status: "Success" };
     case "Form_Full":
-      return { ...state, Status: "Editing" };
+      return { ...state, status: "Editing" };
     default:
       return state;
   }
@@ -130,17 +122,26 @@ export default function BookingComponent() {
     }, 2000);
   };
 
+  const inputClasses = `mt-1 block w-full rounded-md border-2 shadow-sm 
+    focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 
+    transition duration-200 ease-in-out py-2`;
+
   return (
     <section className="max-w-2xl mx-auto p-6">
       <article>
-        {state.Status === "Success" ? (
+        {state.status === "Success" ? (
           <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4">
             Thank you for your booking
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="text-center">
-              <h1 className="text-3xl font-bold">Design Booking</h1>
+              <h1 className="text-3xl font-bold text-orange-600 mb-2">
+                Design Consultation Booking
+              </h1>
+              <p className="text-md text-gray-600">
+                Schedule your personalized interior design session
+              </p>
             </div>
             <fieldset className="border p-4 rounded">
               <legend className="font-semibold">Personal Information:</legend>
@@ -156,25 +157,20 @@ export default function BookingComponent() {
                         name={field}
                         value={state.data[field]}
                         onChange={handleChangeEvent}
-                        placeholder={`Enter your ${
+                        placeholder={` Enter your ${
                           field === "house"
                             ? "House/Flat Number and Street Name"
                             : field
                         }`}
-                        className={`mt-1 block w-full rounded-md border-2 shadow-sm 
-                          focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 
-                          transition duration-200 ease-in-out
-                          ${
-                            state.errors[field]
-                              ? "border-red-500 bg-red-50"
-                              : "border-gray-300 focus:bg-white"
-                          }
-                          ${
-                            state.data[field] && !state.errors[field]
-                              ? "bg-green-50"
-                              : ""
-                          }
-                        `}
+                        className={`${inputClasses} ${
+                          state.errors[field]
+                            ? "border-red-500 bg-red-50"
+                            : "border-gray-300 focus:bg-white"
+                        } ${
+                          state.data[field] && !state.errors[field]
+                            ? "bg-green-50"
+                            : ""
+                        }`}
                         required
                       />
                     </label>
@@ -202,20 +198,20 @@ export default function BookingComponent() {
                         name={field}
                         value={state.data[field]}
                         onChange={handleChangeEvent}
-                        className={`mt-1 block w-full rounded-md border-2 shadow-sm 
-                          focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 
-                          transition duration-200 ease-in-out
-                          ${
-                            state.errors[field]
-                              ? "border-red-500 bg-red-50"
-                              : "border-gray-300 focus:bg-white"
-                          }
-                          ${
-                            state.data[field] && !state.errors[field]
-                              ? "bg-green-50"
-                              : ""
-                          }
-                        `}
+                        placeholder={` Enter your ${
+                          field === "house"
+                            ? "House/Flat Number and Street Name"
+                            : field
+                        }`}
+                        className={`${inputClasses} ${
+                          state.errors[field]
+                            ? "border-red-500 bg-red-50"
+                            : "border-gray-300 focus:bg-white"
+                        } ${
+                          state.data[field] && !state.errors[field]
+                            ? "bg-green-50"
+                            : ""
+                        }`}
                         required
                       />
                     </label>
@@ -228,11 +224,11 @@ export default function BookingComponent() {
                 ))}
               </div>
             </fieldset>
-            {state.Status === "Submitting" ? (
+            {state.status === "Submitting" ? (
               <div className="text-center text-blue-600">Submitting...</div>
             ) : (
               <button
-                className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                className="w-full rounded-lg p-2.5 bg-gradient-to-r from-orange-300 to-orange-600 text-white font-semibold shadow-md hover:from-orange-500 hover:to-orange-700 active:from-orange-600 active:to-orange-800 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50"
                 type="submit"
               >
                 Request Design Consultation
