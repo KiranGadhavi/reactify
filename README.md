@@ -1,18 +1,22 @@
 # 🛠️ Rectify App
 
-[![CI/CD Pipeline](https://github.com/your-username/rectify-app/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/rectify-app/actions/workflows/ci.yml)
+[![CI/CD Pipeline](https://github.com/KiranGadhavi/rectify-app/actions/workflows/ci.yml/badge.svg)](https://github.com/KiranGadhavi/rectify-app/actions/workflows/ci.yml)
 
 Welcome to Rectify App, a modern web application built with Next.js and React! 🚀
 
 ## 📚 Table of Contents
 
-- [🌐 Live Website](https://kreactify.vercel.app/)
-- [✨ Features](https://kreactify.vercel.app/Booking)
-- [🚀 Getting Started](https://github.com/KiranGadhavi/reactify)
+- [🌐 Live Website](#-live-website)
+- [✨ Features](#-features)
+- [🚀 Getting Started](#-getting-started)
 - [🏗️ Project Structure](#️-project-structure)
-- [🧪 Testing](https://github.com/KiranGadhavi/reactify/actions)
-- [🚢 Deployment](https://vercel.com)
-- [🤝 Contributing](www.linkedin.com/in/kiran-gadhavi7)
+- [🧪 Testing](#-testing)
+- [🚢 Deployment](#-deployment)
+- [🤝 Contributing](#-contributing)
+
+## 🌐 Live Website
+
+Visit our live website at [https://kreactify.vercel.app/](https://kreactify.vercel.app/)
 
 ## ✨ Features
 
@@ -20,6 +24,7 @@ Welcome to Rectify App, a modern web application built with Next.js and React! �
 - 🌍 Interactive reviews component for different countries
 - 🔍 How It Works section with image and content display
 - 🔄 Continuous Integration and Deployment with GitHub Actions
+- 📅 Booking system for design consultations
 
 ## 🚀 Getting Started
 
@@ -28,7 +33,7 @@ To get started with the Rectify App, follow these steps:
 1. Clone the repository:
 
    ```
-   git clone https://github.com/your-username/rectify-app.git
+   git clone https://github.com/KiranGadhavi/rectify-app.git
    ```
 
 2. Install dependencies:
@@ -52,16 +57,29 @@ The project structure is organized as follows:
 
 ```
 rectify-app/
-├── components/
-│   ├── Header.jsx
-│   ├── Footer.jsx
-│   └── ...
-├── pages/
-│   ├── index.jsx
-│   ├── Booking.jsx
+├── src/
+│   ├── app/
+│   │   ├── page.jsx
+│   │   └── layout.jsx
+│   ├── components/
+│   │   ├── Header/
+│   │   │   └── HeaderComponent.jsx
+│   │   ├── Footer/
+│   │   │   └── FooterComponent.jsx
+│   │   ├── Main/
+│   │   │   ├── HowItWorks/
+│   │   │   │   └── HowItWorksComponent.jsx
+│   │   │   └── Reviews/
+│   │   │       └── ReviewsComponent.jsx
+│   │   ├── Founder/
+│   │   │   ├── FounderComponent.jsx
+│   │   │   └── FounderFlash/
+│   │   │       └── FounderFlashComponent.jsx
+│   │   └── Booking/
+│   │       └── BookingComponent.jsx
 │   └── ...
 ├── public/
-│   ├── images/
+│   ├── assets/
 │   │   ├── logo.png
 │   │   └── ...
 │   └── ...
@@ -70,7 +88,10 @@ rectify-app/
 │       ├── ci.yml
 │       └── ...
 ├── .next/
-│   ├── cache/
+│   ├── cache/ # Next.js cache
 │   └── ...
-
+├── node_modules/ # Dependencies
+├── package.json # Project configuration
+├── README.md # This file
+└── ...
 ```
