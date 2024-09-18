@@ -1,5 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaStar } from "react-icons/fa";
 
 const buttonData = [
   { id: 1, label: "England" },
@@ -47,67 +49,109 @@ export default function ReviewsComponent() {
     setSelectedButton(country);
   };
 
+  const renderStars = (rating) => {
+    return [...Array(5)].map((_, index) => (
+      <FaStar
+        key={index}
+        className={index < rating ? "text-yellow-400" : "text-gray-300"}
+      />
+    ));
+  };
+
+  const renderReview = (review) => (
+    <motion.div
+      key={review.id}
+      className="bg-gray-100 p-6 rounded-lg shadow-md mb-6"
+      whileHover={{ scale: 1.02 }}
+      transition={{ duration: 0.2 }}
+    >
+      <p className="text-sm font-medium text-gray-900">
+        &ldquo;{review.text}&rdquo;
+      </p>
+      <div className="flex items-center justify-between">
+        <div className="flex">{renderStars(review.rating)}</div>
+        <div className="text-right">
+          <p className="font-semibold">{review.author}</p>
+          {review.location && (
+            <p className="text-sm text-gray-600 mt-1">{review.location}</p>
+          )}
+          <p className="text-sm text-gray-500 mt-1">{review.date}</p>
+        </div>
+      </div>
+    </motion.div>
+  );
+
   return (
-    <section className="grid grid-cols">
+    <section className="bg-white shadow-lg rounded-lg p-8 my-12">
       <article className="text-center">
-        <h1 className="m-2 text-xl">Trusted</h1>
-        <hr />
-        <p className="m-6">
-          We have got thousands of happy customers all over the UK. Choose your
-          country to see the latest review:
+        <h1 className="text-3xl font-bold mb-6 text-gray-800">
+          Trusted by Thousands
+        </h1>
+        <hr className="w-1/4 mx-auto border-orange-500 mb-8" />
+        <p className="text-lg text-gray-600 mb-10">
+          We&apos;ve earned the trust of thousands of satisfied customers across
+          the UK. Select your country to view our latest reviews:
         </p>
-        <div className="flex flex-col sm:flex-row justify-center items-center">
+        <div className="flex flex-wrap justify-center items-center gap-6 mb-10">
           {buttonData.map((btnData) => (
-            <div
+            <motion.button
               key={btnData.id}
-              className={`text-center w-40 m-4 p-1 rounded-md text-white
-                ${
-                  selectedButton === btnData.label
-                    ? "bg-orange-300 bg-gradient-to-r from-orange-300 to-orange-600"
-                    : "bg-gray-600 hover:bg-orange-300 hover:bg-gradient-to-r hover:from-orange-300 hover:to-orange-600"
-                }`}
+              onClick={() => handleClick(btnData.label)}
+              className={`px-8 py-3 rounded-full text-white font-semibold transition-all duration-300 ${
+                selectedButton === btnData.label
+                  ? "bg-orange-500 shadow-lg"
+                  : "bg-gray-600 hover:bg-orange-400"
+              }`}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <button
-                onClick={() => handleClick(btnData.label)}
-                className="m-2 w-full"
-              >
-                {btnData.label}
-              </button>
-            </div>
+              {btnData.label}
+            </motion.button>
           ))}
         </div>
-        {loading && <p>Loading...</p>}
-        {error && <p>Error: {error}</p>}
 
-        {/* Handle both array of reviews and a single review */}
-        {selectedCountry && Array.isArray(reviews) && reviews.length > 0 && (
-          <div>
-            <h2>Reviews for {selectedCountry}</h2>
-            {reviews.map((review) => (
-              <div key={review.id} className="bg-gray-200 p-4 rounded my-2">
-                <h3>{review.text}</h3>
-                <p>{review.author}</p>
-                {review.location && <p>{review.location}</p>}
-                <p>{review.date}</p>
-                <p>{review.rating}</p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* In case it's a single review */}
-        {selectedCountry &&
-          reviews &&
-          !Array.isArray(reviews) &&
-          reviews.text && (
-            <>
-              <div className="bg-gray-200 p-4 rounded">{reviews.text}</div>
-              <div className="text-right p-1 font-bold">
-                {reviews.author}
-                {reviews.location ? ` - ${reviews.location}` : ""}
-              </div>
-            </>
+        <AnimatePresence>
+          {loading && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="text-lg text-gray-600 mb-6"
+            >
+              Loading reviews...
+            </motion.div>
           )}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="text-lg text-red-500 mb-6"
+            >
+              Error: {error}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {selectedCountry && reviews && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+            >
+              <h2 className="text-2xl font-semibold mb-8 text-gray-700">
+                Reviews for {selectedCountry}
+              </h2>
+              <div className="space-y-6">
+                {Array.isArray(reviews)
+                  ? reviews.map(renderReview)
+                  : renderReview(reviews)}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </article>
     </section>
   );

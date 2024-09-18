@@ -1,78 +1,107 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaHome, FaUser, FaCalendarAlt, FaCog } from "react-icons/fa";
 
 export default function HeaderComponent() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
-  function handleButton() {
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 10;
+      if (isScrolled !== scrolled) {
+        setScrolled(isScrolled);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [scrolled]);
+
+  const toggleMenu = () => {
     setIsMenuOpen((prev) => !prev);
-  }
+  };
+
+  const menuItems = [
+    { href: "/", label: "Home", icon: FaHome },
+    { href: "/Founder", label: "Founder", icon: FaUser },
+    { href: "/Booking", label: "Booking", icon: FaCalendarAlt },
+    { href: "/Service", label: "Service", icon: FaCog },
+  ];
 
   return (
-    <header className="grid p-4 fixed top-0 left-0 w-full z-10 bg-white">
-      <section>
-        {/* Hamburger menu when closed */}
-        {!isMenuOpen && (
-          <article className="flex justify-between">
-            <div>
+    <header
+      className={`fixed top-0 left-0 w-full z-10 transition-all duration-300 ${
+        scrolled ? "bg-white shadow-md" : "bg-transparent"
+      }`}
+    >
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-center py-4">
+          <Link href="/" className="flex items-center space-x-2">
+            <span className="text-2xl font-bold text-orange-500">
               KReactify
-              <span className="pb-3">🖊️</span>
-            </div>
-            <div>
-              <button
-                className="focus:outline-none"
-                onClick={handleButton}
-                aria-label="Open menu"
+            </span>
+            <span className="text-3xl">🖊️</span>
+          </Link>
+          <nav className="hidden md:flex space-x-6">
+            {menuItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="text-gray-600 hover:text-orange-500 transition-colors duration-200"
               >
-                <Image
-                  src="/assets/menu-open-button.png"
-                  alt="menu-button"
-                  width={20}
-                  height={20}
-                />
-              </button>
-            </div>
-          </article>
-        )}
-
-        {/* Menu when open */}
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+          <button
+            className="md:hidden focus:outline-none"
+            onClick={toggleMenu}
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          >
+            <Image
+              src={
+                isMenuOpen
+                  ? "/assets/menu-close-button.png"
+                  : "/assets/menu-open-button.png"
+              }
+              alt={isMenuOpen ? "close-menu-button" : "menu-button"}
+              width={24}
+              height={24}
+            />
+          </button>
+        </div>
+      </div>
+      <AnimatePresence>
         {isMenuOpen && (
-          <article className="p-4 bg-gradient-to-r from-orange-300 to-orange-500 hover:bg-orange-500">
-            <div className="text-end">
-              <button
-                className="focus:outline-none"
-                onClick={handleButton}
-                aria-label="Close menu"
-              >
-                <Image
-                  src="/assets/menu-close-button.png"
-                  alt="close-menu-button"
-                  width={20}
-                  height={20}
-                />
-              </button>
-            </div>
-            <div className="text-center">
-              <ul onClick={handleButton}>
-                <li>
-                  <Link href="/">Home</Link>
-                </li>
-                <li>
-                  <Link href="/Founder">Founder Page</Link>
-                </li>
-                <li>
-                  <Link href="/Booking">Booking Consultation</Link>
-                </li>
-                <li>
-                  <Link href="/Service">Service</Link>
-                </li>
-              </ul>
-            </div>
-          </article>
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.2 }}
+            className="md:hidden"
+          >
+            <nav className="bg-white shadow-lg">
+              {menuItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="flex items-center space-x-2 px-4 py-3 hover:bg-orange-100 transition-colors duration-200"
+                  onClick={toggleMenu}
+                >
+                  <item.icon className="text-orange-500" />
+                  <span>{item.label}</span>
+                </Link>
+              ))}
+            </nav>
+          </motion.div>
         )}
-      </section>
+      </AnimatePresence>
     </header>
   );
 }

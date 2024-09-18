@@ -5,27 +5,27 @@ const initialState = {
   data: {
     fullName: "",
     postcode: "",
-    house: "",
+    addressLine1: "",
     city: "",
     phoneNumber: "",
     emailAddress: "",
   },
   errors: {},
-  status: "Editing",
+  status: "IDLE",
 };
 
 function reducer(state, action) {
   switch (action.type) {
-    case "CHANGE_FORM_DATA":
+    case "UPDATE_FIELD":
       return {
         ...state,
         data: {
           ...state.data,
-          [action.payload.name]: action.payload.value,
+          [action.field]: action.value,
         },
         errors: {
           ...state.errors,
-          [action.payload.name]: "",
+          [action.field]: "",
         },
       };
     case "SET_ERROR":
@@ -33,17 +33,11 @@ function reducer(state, action) {
         ...state,
         errors: {
           ...state.errors,
-          [action.payload.field]: action.payload.message,
+          [action.field]: action.message,
         },
       };
-    case "Submit_Started":
-      return { ...state, status: "Submitting" };
-    case "Error":
-      return { ...state, status: "Error" };
-    case "Form_Success":
-      return { ...state, status: "Success" };
-    case "Form_Full":
-      return { ...state, status: "Editing" };
+    case "SET_STATUS":
+      return { ...state, status: action.status };
     default:
       return state;
   }
@@ -55,47 +49,53 @@ export default function BookingComponent() {
   const validateField = (name, value) => {
     switch (name) {
       case "fullName":
-        return value.trim() ? "" : "Full name is required";
+        return value.trim().split(/\s+/).length >= 2
+          ? ""
+          : "Please enter your full name";
       case "postcode":
         return /^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$/i.test(value)
           ? ""
-          : "Invalid postcode format";
-      case "house":
+          : "Please enter a valid UK postcode";
+      case "addressLine1":
         return value.trim()
           ? ""
-          : "House/Flat number and street name is required";
+          : "Please enter your house/flat number and street name";
       case "city":
-        return value.trim() ? "" : "City is required";
+        return value.trim() ? "" : "Please enter your city";
       case "phoneNumber":
-        return /^(\+44|0)\d{10}$/.test(value) ? "" : "Invalid UK phone number";
+        return /^(\+44|0)\d{10}$/.test(value)
+          ? ""
+          : "Please enter a valid UK phone number";
       case "emailAddress":
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
           ? ""
-          : "Invalid email address";
+          : "Please enter a valid email address";
       default:
         return "";
     }
   };
 
-  const handleChangeEvent = (event) => {
+  const handleInputChange = (event) => {
     const { name, value } = event.target;
     dispatch({
-      type: "CHANGE_FORM_DATA",
-      payload: { name, value },
+      type: "UPDATE_FIELD",
+      field: name,
+      value,
     });
 
     const error = validateField(name, value);
     if (error) {
       dispatch({
         type: "SET_ERROR",
-        payload: { field: name, message: error },
+        field: name,
+        message: error,
       });
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch({ type: "Submit_Started" });
+    dispatch({ type: "SET_STATUS", status: "SUBMITTING" });
 
     const errors = Object.keys(state.data).reduce((acc, key) => {
       const error = validateField(key, state.data[key]);
@@ -109,34 +109,36 @@ export default function BookingComponent() {
       Object.keys(errors).forEach((field) => {
         dispatch({
           type: "SET_ERROR",
-          payload: { field, message: errors[field] },
+          field,
+          message: errors[field],
         });
       });
-      dispatch({ type: "Error" });
+      dispatch({ type: "SET_STATUS", status: "ERROR" });
       return;
     }
 
     // Simulating API call
     setTimeout(() => {
-      dispatch({ type: "Form_Success" });
+      dispatch({ type: "SET_STATUS", status: "SUCCESS" });
     }, 2000);
   };
 
   const inputClasses = `mt-1 block w-full rounded-md border-2 shadow-sm 
     focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 
-    transition duration-200 ease-in-out py-2`;
+    transition duration-200 ease-in-out py-2 px-3`;
 
   return (
     <section className="max-w-2xl mx-auto p-6">
       <article>
-        {state.status === "Success" ? (
+        {state.status === "SUCCESS" ? (
           <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4">
-            Thank you for your booking
+            Thank you for your booking. We will be in touch shortly to confirm
+            your consultation.
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="text-center">
-              <h1 className="text-3xl font-bold text-orange-600 mb-2">
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">
                 Design Consultation Booking
               </h1>
               <p className="text-md text-gray-600">
@@ -144,64 +146,73 @@ export default function BookingComponent() {
               </p>
             </div>
             <fieldset className="border p-4 rounded">
-              <legend className="font-semibold">Personal Information:</legend>
+              <legend className="font-semibold">Personal Information</legend>
               <div className="space-y-4">
-                {["fullName", "postcode", "house", "city"].map((field) => (
-                  <div key={field}>
-                    <label className="block">
-                      {field === "house"
-                        ? "House/Flat Number and Street Name:"
-                        : `${field.charAt(0).toUpperCase() + field.slice(1)}:`}
-                      <input
-                        type="text"
-                        name={field}
-                        value={state.data[field]}
-                        onChange={handleChangeEvent}
-                        placeholder={` Enter your ${
-                          field === "house"
-                            ? "House/Flat Number and Street Name"
-                            : field
-                        }`}
-                        className={`${inputClasses} ${
-                          state.errors[field]
-                            ? "border-red-500 bg-red-50"
-                            : "border-gray-300 focus:bg-white"
-                        } ${
-                          state.data[field] && !state.errors[field]
-                            ? "bg-green-50"
-                            : ""
-                        }`}
-                        required
-                      />
-                    </label>
-                    {state.errors[field] && (
-                      <p className="mt-2 text-sm text-red-600">
-                        {state.errors[field]}
-                      </p>
-                    )}
-                  </div>
-                ))}
+                {["fullName", "postcode", "addressLine1", "city"].map(
+                  (field) => (
+                    <div key={field}>
+                      <label className="block text-sm font-medium text-gray-700">
+                        {field === "addressLine1"
+                          ? "Address Line 1"
+                          : field.charAt(0).toUpperCase() +
+                            field
+                              .slice(1)
+                              .replace(/([A-Z])/g, " $1")
+                              .trim()}
+                        <input
+                          type="text"
+                          name={field}
+                          value={state.data[field]}
+                          onChange={handleInputChange}
+                          placeholder={`Enter your ${
+                            field === "addressLine1"
+                              ? "house/flat number and street name"
+                              : field
+                                  .replace(/([A-Z])/g, " $1")
+                                  .toLowerCase()
+                                  .trim()
+                          }`}
+                          className={`${inputClasses} ${
+                            state.errors[field]
+                              ? "border-red-500 bg-red-50"
+                              : "border-gray-300 focus:bg-white"
+                          } ${
+                            state.data[field] && !state.errors[field]
+                              ? "bg-green-50"
+                              : ""
+                          }`}
+                          required
+                        />
+                      </label>
+                      {state.errors[field] && (
+                        <p className="mt-2 text-sm text-red-600">
+                          {state.errors[field]}
+                        </p>
+                      )}
+                    </div>
+                  )
+                )}
               </div>
             </fieldset>
 
             <fieldset className="border p-4 rounded">
-              <legend className="font-semibold">Contact Information:</legend>
+              <legend className="font-semibold">Contact Information</legend>
               <div className="space-y-4">
                 {["phoneNumber", "emailAddress"].map((field) => (
                   <div key={field}>
-                    <label className="block">
+                    <label className="block text-sm font-medium text-gray-700">
                       {field === "phoneNumber"
-                        ? "Phone Number:"
-                        : "Email Address:"}
+                        ? "Phone Number"
+                        : "Email Address"}
                       <input
                         type={field === "emailAddress" ? "email" : "tel"}
                         name={field}
                         value={state.data[field]}
-                        onChange={handleChangeEvent}
-                        placeholder={` Enter your ${
-                          field === "house"
-                            ? "House/Flat Number and Street Name"
-                            : field
+                        onChange={handleInputChange}
+                        placeholder={`Enter your ${
+                          field === "phoneNumber"
+                            ? "phone number"
+                            : "email address"
                         }`}
                         className={`${inputClasses} ${
                           state.errors[field]
@@ -224,11 +235,13 @@ export default function BookingComponent() {
                 ))}
               </div>
             </fieldset>
-            {state.status === "Submitting" ? (
-              <div className="text-center text-blue-600">Submitting...</div>
+            {state.status === "SUBMITTING" ? (
+              <div className="text-center text-blue-600">
+                Processing your request...
+              </div>
             ) : (
               <button
-                className="w-full rounded-lg p-2.5 bg-gradient-to-r from-orange-300 to-orange-600 text-white font-semibold shadow-md hover:from-orange-500 hover:to-orange-700 active:from-orange-600 active:to-orange-800 transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50"
+                className="w-full rounded-lg p-2.5 bg-orange-600 text-white font-semibold shadow-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transition-colors duration-300"
                 type="submit"
               >
                 Request Design Consultation
