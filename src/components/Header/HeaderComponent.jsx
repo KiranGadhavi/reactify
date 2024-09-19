@@ -2,12 +2,14 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaHome, FaUser, FaCalendarAlt, FaCog } from "react-icons/fa";
 
 export default function HeaderComponent() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,8 +37,11 @@ export default function HeaderComponent() {
   ];
 
   return (
-    <header
-      className={`fixed top-0 left-0 w-full z-10 transition-all duration-300 ${
+    <motion.header
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className={`fixed top-0 left-0 w-full z-10 transition-all duration-500 ease-in-out ${
         scrolled ? "bg-white shadow-md" : "bg-transparent"
       }`}
     >
@@ -53,14 +58,18 @@ export default function HeaderComponent() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="text-gray-600 hover:text-orange-500 transition-colors duration-200"
+                className={`text-gray-600 hover:text-orange-500 transition-all duration-300 ease-in-out pb-1 ${
+                  pathname === item.href
+                    ? "border-b-2 border-orange-500 text-orange-500"
+                    : ""
+                }`}
               >
                 {item.label}
               </Link>
             ))}
           </nav>
           <button
-            className="md:hidden focus:outline-none"
+            className="md:hidden focus:outline-none transition-transform duration-300 ease-in-out"
             onClick={toggleMenu}
             aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           >
@@ -80,10 +89,10 @@ export default function HeaderComponent() {
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
             className="md:hidden"
           >
             <nav className="bg-white shadow-lg">
@@ -91,17 +100,33 @@ export default function HeaderComponent() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="flex items-center space-x-2 px-4 py-3 hover:bg-orange-100 transition-colors duration-200"
+                  className={`flex items-center space-x-2 px-4 py-3 hover:bg-orange-100 transition-all duration-300 ease-in-out ${
+                    pathname === item.href
+                      ? "border-l-4 border-orange-500 bg-orange-50"
+                      : ""
+                  }`}
                   onClick={toggleMenu}
                 >
-                  <item.icon className="text-orange-500" />
-                  <span>{item.label}</span>
+                  <item.icon
+                    className={`transition-colors duration-300 ease-in-out ${
+                      pathname === item.href
+                        ? "text-orange-500"
+                        : "text-gray-500"
+                    }`}
+                  />
+                  <span
+                    className={`transition-colors duration-300 ease-in-out ${
+                      pathname === item.href ? "text-orange-500" : ""
+                    }`}
+                  >
+                    {item.label}
+                  </span>
                 </Link>
               ))}
             </nav>
           </motion.div>
         )}
       </AnimatePresence>
-    </header>
+    </motion.header>
   );
 }

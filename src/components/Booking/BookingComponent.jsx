@@ -1,5 +1,5 @@
 "use client";
-import { useReducer } from "react";
+import { useReducer, useEffect, useState } from "react";
 
 const initialState = {
   data: {
@@ -45,6 +45,11 @@ function reducer(state, action) {
 
 export default function BookingComponent() {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
 
   const validateField = (name, value) => {
     switch (name) {
@@ -124,24 +129,32 @@ export default function BookingComponent() {
   };
 
   const inputClasses = `mt-1 block w-full rounded-md border-2 shadow-sm 
-    focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 
-    transition duration-200 ease-in-out py-2 px-3`;
+    focus:border-orange-500 focus:ring-2 focus:ring-orange-200 
+    active:border-orange-600 active:ring-2 active:ring-orange-300
+    transition duration-300 ease-in-out py-2 px-3 hover:border-orange-300
+    transform hover:scale-[1.02] focus:scale-[1.02]
+    focus:outline-none focus-visible:outline-none`; // Added focus-visible:outline-none
 
   return (
     <section className="max-w-2xl mx-auto p-6">
-      <article>
+      <article
+        className={`transition-all duration-700 ease-out transform 
+          ${
+            isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+          }`}
+      >
         {state.status === "SUCCESS" ? (
-          <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4">
+          <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 animate-fade-in">
             Thank you for your booking. We will be in touch shortly to confirm
             your consultation.
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="text-center">
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">
+              <h1 className="text-3xl font-bold text-gray-800 mb-2 animate-fade-in">
                 Design Consultation Booking
               </h1>
-              <p className="text-md text-gray-600">
+              <p className="text-md text-gray-600 animate-fade-in-delay">
                 Schedule your personalized interior design session
               </p>
             </div>
@@ -236,12 +249,15 @@ export default function BookingComponent() {
               </div>
             </fieldset>
             {state.status === "SUBMITTING" ? (
-              <div className="text-center text-blue-600">
+              <div className="text-center text-orange-600 animate-pulse">
                 Processing your request...
               </div>
             ) : (
               <button
-                className="w-full rounded-lg p-2.5 bg-orange-600 text-white font-semibold shadow-md hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50 transition-colors duration-300"
+                className="w-full rounded-lg p-2.5 bg-orange-600 text-white font-semibold shadow-md 
+                hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 
+                focus:ring-opacity-50 active:bg-orange-800 active:ring-2 active:ring-orange-600 
+                transition-all duration-300 ease-in-out transform hover:scale-[1.02] focus:scale-[1.02]"
                 type="submit"
               >
                 Request Design Consultation

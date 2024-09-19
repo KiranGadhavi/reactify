@@ -1,12 +1,20 @@
 "use client";
 
-import React, { useCallback, useRef, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useRef,
+  useMemo,
+  useState,
+  useEffect,
+} from "react";
 import {
   GoogleMap,
   useLoadScript,
   MarkerF,
   InfoWindowF,
 } from "@react-google-maps/api";
+import { motion } from "framer-motion";
+import { FaMapMarkerAlt } from "react-icons/fa";
 
 const containerStyle = {
   width: "100%",
@@ -31,6 +39,11 @@ const GoogleMapComponent = () => {
       position: { lat: 51.5014, lng: -0.1419 },
     },
   ]);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
@@ -52,22 +65,24 @@ const GoogleMapComponent = () => {
       mapId: process.env.NEXT_PUBLIC_GOOGLE_MAPS_ID,
       disableDefaultUI: false,
       clickableIcons: false,
-      zoomControl: true,
-      mapTypeControl: true,
-      scaleControl: true,
-      streetViewControl: true,
-      rotateControl: true,
-      fullscreenControl: true,
     }),
     []
   );
 
   const handleMarkerClick = (marker) => {
     setSelectedMarker(marker);
+    if (mapRef.current) {
+      mapRef.current.panTo(marker.position);
+      mapRef.current.setZoom(15);
+    }
   };
 
   const handleInfoWindowClose = () => {
     setSelectedMarker(null);
+  };
+
+  const handleLegendItemClick = (marker) => {
+    handleMarkerClick(marker);
   };
 
   if (loadError)
@@ -80,45 +95,71 @@ const GoogleMapComponent = () => {
     );
 
   return (
-    <div className="relative">
-      <GoogleMap
-        mapContainerStyle={containerStyle}
-        center={center}
-        zoom={12}
-        onLoad={onLoad}
-        onUnmount={onUnmount}
-        options={options}
-      >
-        {markers.map((marker) => (
-          <MarkerF
-            key={marker.id}
-            position={marker.position}
-            onClick={() => handleMarkerClick(marker)}
-          />
-        ))}
-
-        {selectedMarker && (
-          <InfoWindowF
-            position={selectedMarker.position}
-            onCloseClick={handleInfoWindowClose}
-          >
-            <div>
-              <h3 className="font-bold">{selectedMarker.name}</h3>
-              <p>Latitude: {selectedMarker.position.lat}</p>
-              <p>Longitude: {selectedMarker.position.lng}</p>
-            </div>
-          </InfoWindowF>
-        )}
-      </GoogleMap>
-      <div className="absolute bottom-4 left-4 bg-white p-2 rounded shadow">
-        <h4 className="font-bold mb-2">Map Legend</h4>
-        <ul>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="relative"
+    >
+      <div className="relative">
+        <GoogleMap
+          mapContainerStyle={containerStyle}
+          center={center}
+          zoom={12}
+          onLoad={onLoad}
+          onUnmount={onUnmount}
+          options={options}
+        >
           {markers.map((marker) => (
-            <li key={marker.id}>{marker.name}</li>
+            <MarkerF
+              key={marker.id}
+              position={marker.position}
+              onClick={() => handleMarkerClick(marker)}
+              icon={{
+                path: FaMapMarkerAlt.path,
+                fillColor: "#f97316",
+                fillOpacity: 1,
+                strokeWeight: 1,
+                strokeColor: "#000",
+                scale: 0.075,
+              }}
+            />
+          ))}
+
+          {selectedMarker && (
+            <InfoWindowF
+              position={selectedMarker.position}
+              onCloseClick={handleInfoWindowClose}
+            >
+              <div>
+                <h3 className="font-bold text-lg">{selectedMarker.name}</h3>
+                <p className="text-sm text-gray-600">
+                  Latitude: {selectedMarker.position.lat.toFixed(4)}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Longitude: {selectedMarker.position.lng.toFixed(4)}
+                </p>
+              </div>
+            </InfoWindowF>
+          )}
+        </GoogleMap>
+      </div>
+      <div className="absolute bottom-4 left-4 bg-white bg-opacity-90 p-4 rounded-lg shadow-md">
+        <h2 className="font-bold text-lg mb-2">Map Legend</h2>
+        <ul className="space-y-2">
+          {markers.map((marker) => (
+            <li
+              key={marker.id}
+              className="flex items-center cursor-pointer hover:text-orange-500 transition-colors duration-200"
+              onClick={() => handleLegendItemClick(marker)}
+            >
+              <FaMapMarkerAlt className="text-orange-500 mr-2" />
+              <span>{marker.name}</span>
+            </li>
           ))}
         </ul>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

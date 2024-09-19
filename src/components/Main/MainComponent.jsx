@@ -104,9 +104,7 @@ export default function MainComponent() {
               <HowItWorksComponent
                 imgData={{
                   ...imgData,
-                  title: (
-                    <span className="text-orange-600">{imgData.title}</span>
-                  ),
+                  title: <span>{imgData.title}</span>,
                 }}
               />
             </motion.div>
